@@ -1,0 +1,20 @@
+.DS_Store
+node_modules
+/dist
+/build
+
+/test/_TestFAMAsset.js
+/test/_TestPool.js
+/test/_TestStore.js
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+secrets-ropsten.json
+secrets-main.json

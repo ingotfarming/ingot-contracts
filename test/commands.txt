@@ -1,0 +1,26 @@
+truffle compile
+truffle migrate --reset
+truffle console
+
+var accounts = await web3.eth.getAccounts()
+
+var famtoken = await INGOTToken.deployed()
+var famasset = await INGOTAsset.deployed()
+var pool = await Pool.deployed()
+
+var transfer = await famasset.safeTransferFrom(accounts[0], pool.address, 0, 2, 0)
+(await famasset.balanceOf(accounts[0], 0)).toNumber()
+(await famasset.balanceOf(pool.address, 0)).toNumber()
+
+
+famtoken.mint(accounts[0], 100)
+var balance = await famtoken.balanceOf(accounts[0])
+balance.toString()
+
+
+var balance = await famasset.balanceOf(accounts[0],0)
+balance.toString()
+
+famtoken.mint("0x79E5Da24447A006A95b33b8AB39C6FD623ce31dE", "300")
+famasset.mint(accounts[0], 0, 10, 0);
+
