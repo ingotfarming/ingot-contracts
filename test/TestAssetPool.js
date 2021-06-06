@@ -2,9 +2,9 @@
 const utils = require('./utils.js');
 const BN = web3.utils.BN;
 
-const INGOTToken = artifacts.require("INGOTToken");
-const INGOTAsset = artifacts.require("INGOTAsset");
-const AssetPool = artifacts.require("AssetPool");
+const IngotToken = artifacts.require("IngotToken");
+const IngotNFT = artifacts.require("IngotNFT");
+const IngotFarm = artifacts.require("IngotFarm");
 
 var ingotToken;
 var ingotAsset;
@@ -18,11 +18,11 @@ var REWARD_FOR_BLOCK_DEV;
 var EPSILON_REWARD = new BN(100)
 const SAFE_MULTIPLIER = (new BN('10')).pow(new BN('18'));
 
-contract("AssetPool", async accounts => {
+contract("IngotFarm", async accounts => {
   async function deployContract() {
-    ingotToken = await INGOTToken.new();
-    ingotAsset = await INGOTAsset.new();
-    assetPool = await AssetPool.new(ingotToken.address, ingotAsset.address);
+    ingotToken = await IngotToken.new();
+    ingotAsset = await IngotNFT.new();
+    assetPool = await IngotFarm.new(ingotToken.address, ingotAsset.address);
 
     await ingotToken.addMinter(assetPool.address, {from: owner});
     await ingotAsset.addMinter(assetPool.address, {from: owner});

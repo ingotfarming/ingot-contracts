@@ -2,8 +2,8 @@
 const utils = require('./utils.js');
 const BN = web3.utils.BN;
 
-const INGOTToken = artifacts.require("INGOTToken");
-const INGOTAsset = artifacts.require("INGOTAsset");
+const IngotToken = artifacts.require("IngotToken");
+const IngotNFT = artifacts.require("IngotNFT");
 const Store = artifacts.require("Store");
 
 var ingotToken;
@@ -18,8 +18,8 @@ const SAFE_MULTIPLIER = (new BN('10')).pow(new BN('18'));
 contract("StoreTest", async accounts => {
 
   async function deployContract() {
-    ingotToken = await INGOTToken.new();
-    ingotAsset = await INGOTAsset.new();
+    ingotToken = await IngotToken.new();
+    ingotAsset = await IngotNFT.new();
     store = await Store.new(ingotToken.address, ingotAsset.address);
 
     await ingotToken.addMinter(store.address);
@@ -64,15 +64,15 @@ contract("StoreTest", async accounts => {
       let amounts = [ new BN(2), new BN(3)];
       var amountToken = new BN(0);
       for(let i=0; i<ids.length;i++){
-        let price = await store.priceNft.call(ids[i]);
+        let price = await store.priceNFT.call(ids[i]);
         amountToken = amountToken.add(price.mul(amounts[i]));
       }
 
-      let balanceBefore = await ingotAsset.balanceOfBatch.call(Array(ids.length).fill(accounts[0]), ids);
-      await ingotToken.approve(store.address, amountToken);
-      await store.buyBatchNft(ids, amounts);
+      let balanceBefore = await ingotAsset.balanceOfBatch.call(Array(ids.length).fill(account1), ids);
+      await ingotToken.approve(store.address, amountToken, {from: account1});
+      await store.buyBatchNft(ids, amounts, {from: account1});
 
-      let balanceAfter = await ingotAsset.balanceOfBatch.call(Array(ids.length).fill(accounts[0]), ids);
+      let balanceAfter = await ingotAsset.balanceOfBatch.call(Array(ids.length).fill(account1), ids);
       
       assert.ok(utils.equalArray(utils.subArray(balanceAfter,balanceBefore),amounts));
     });
@@ -81,14 +81,14 @@ contract("StoreTest", async accounts => {
       let amounts = [new BN(2)];
       var amountToken = new BN(0);
       for(let i=0; i<ids.length;i++){
-        let price = await store.priceNft.call(ids[i]);
+        let price = await store.priceNFT.call(ids[i]);
         amountToken = amountToken.add(price.mul(amounts[i]));
       }
-      let balanceBefore = await ingotAsset.balanceOfBatch.call(Array(ids.length).fill(accounts[0]), ids);
-      await ingotToken.approve(store.address, amountToken);
-      await store.buyBatchNft(ids, amounts);
+      let balanceBefore = await ingotAsset.balanceOfBatch.call(Array(ids.length).fill(account1), ids);
+      await ingotToken.approve(store.address, amountToken, {from: account1});
+      await store.buyBatchNft(ids, amounts, {from: account1});
 
-      let balanceAfter = await ingotAsset.balanceOfBatch.call(Array(ids.length).fill(accounts[0]), ids);
+      let balanceAfter = await ingotAsset.balanceOfBatch.call(Array(ids.length).fill(account1), ids);
       
       assert.ok(utils.equalArray(utils.subArray(balanceAfter,balanceBefore),amounts));
     });

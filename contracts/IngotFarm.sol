@@ -8,10 +8,10 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./interfaces/IINGOTToken.sol";
-import "./interfaces/IINGOTAsset.sol";
+import "./interfaces/IIngotToken.sol";
+import "./interfaces/IIngotNFT.sol";
 
-contract AssetPool is ERC1155Receiver, ReentrancyGuard, Ownable{
+contract IngotFarm is ERC1155Receiver, ReentrancyGuard, Ownable{
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.UintSet;
@@ -22,35 +22,33 @@ contract AssetPool is ERC1155Receiver, ReentrancyGuard, Ownable{
 
         uint256 totalPower;
         uint256 pendingReward;
-        // Reward debt
         uint256 rewardDebt;
     }
 
     // Info of Reward.
     struct RewardInfo {
-        // Last block number that ALPAs distribution occurs.
+        // Last block number that INGOTs distribution occurs.
         uint256 lastRewardBlock;
-        // Accumulated ALPAs per share. Share is determined by LP deposit and total alpaca's energy
+        // Accumulated INGOTs per share.
         uint256 accTokenPerShare;
         // Accumulated Share
         uint256 accShare;
     }
 
-    IINGOTToken public token;
-    IINGOTAsset public asset;
+    IIngotToken public token;
+    IIngotNFT public asset;
 
     uint256 public startBlock;
     
     uint256 public constant SAFE_MULTIPLIER = 1e18;
     
-
     // farm pool info
     RewardInfo public rewardInfo;
     uint256 public rewardForBlock = 40 * SAFE_MULTIPLIER;
 
     mapping(address => UserInfo) private userInfo;
 
-    constructor(IINGOTToken _token, IINGOTAsset _asset) public {
+    constructor(IIngotToken _token, IIngotNFT _asset) public {
         token = _token;
         asset = _asset;
 
@@ -61,12 +59,7 @@ contract AssetPool is ERC1155Receiver, ReentrancyGuard, Ownable{
         });
     }
 
-    function getUserInfo(address addr) public view returns(uint256, uint256, uint256){
-        return(userInfo[addr].totalPower, userInfo[addr].pendingReward, userInfo[addr].rewardDebt );
-    }
-    function getUserNumberAsset(address addr, uint256 assetType) public view returns(uint256){
-        return userInfo[addr].values[assetType];
-    }
+    /* ========== PUBLIC ========== */
 
     function pendingReward() external view returns(uint256){
         UserInfo storage user = userInfo[msg.sender];
@@ -125,24 +118,43 @@ contract AssetPool is ERC1155Receiver, ReentrancyGuard, Ownable{
 
     }
 
-    function _updateUserPower(UserInfo storage _user) private
-    {
-        uint256 totalPower = 0;
-        for (uint256 i = 0; i < _user.keys.length(); i++) {
-            uint256 id = _user.keys.at(i);
-            (, uint256 _power, ,) = asset.getAssetInfo(id);
-            
-            totalPower = totalPower.add(_user.values[id].mul(_power));
+    function updatePool() public {
+        if (block.number <= rewardInfo.lastRewardBlock) {
+            return;
         }
 
-        _user.totalPower = totalPower;
+        if (rewardInfo.accShare == 0) {
+            rewardInfo.lastRewardBlock = block.number;
+            return;
+        }
+
+        uint256 reward = (block.number.sub(rewardInfo.lastRewardBlock)).mul(rewardForBlock);
+
+        rewardInfo.accTokenPerShare = rewardInfo.accTokenPerShare.add(
+            reward.mul(SAFE_MULTIPLIER).div(rewardInfo.accShare)
+        );
+
+        rewardInfo.lastRewardBlock = block.number;
+    }
+
+    function getUserInfo(address addr) public view returns(uint256, uint256, uint256){
+        return(userInfo[addr].totalPower, userInfo[addr].pendingReward, userInfo[addr].rewardDebt );
+    }
+
+    function getUserNumberAsset(address addr, uint256 assetType) public view returns(uint256){
+        return userInfo[addr].values[assetType];
+    }
+
+    function checkLengthSetKeys(address userAddress) external view returns(uint256){
+        return userInfo[userAddress].keys.length();
+    }
+
+    function checkSetKeys(address userAddress, uint256 i) external view returns(uint256){
+        return userInfo[userAddress].keys.at(i); 
     }
 
     /* ========== ERC1155Receiver ========== */
 
-    /**
-     * @dev onERC1155Received implementation per IERC1155Receiver spec
-     */
     function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
     external override nonReentrant fromAssetAddress returns (bytes4) {
         
@@ -200,6 +212,35 @@ contract AssetPool is ERC1155Receiver, ReentrancyGuard, Ownable{
             );
     }
 
+    /* ========== PRIVATE ========== */
+
+    function _updateUserPower(UserInfo storage _user) private
+    {
+        uint256 totalPower = 0;
+        for (uint256 i = 0; i < _user.keys.length(); i++) {
+            uint256 id = _user.keys.at(i);
+            (, uint256 _power, ,) = asset.getAssetInfo(id);
+            
+            totalPower = totalPower.add(_user.values[id].mul(_power));
+        }
+
+        _user.totalPower = totalPower;
+    }
+
+
+    function _updateUserReward(UserInfo storage user) private{
+        if(user.totalPower > 0){
+            uint256 totalReward = user.totalPower.mul(rewardInfo.accTokenPerShare).div(SAFE_MULTIPLIER);
+            uint256 pending = totalReward.sub(user.rewardDebt);
+            user.pendingReward = user.pendingReward.add(pending);
+        }       
+    }
+
+    /* ========== OWNER ONLY FUNCTIONS ========== */
+
+    function setRewardPerBlock(uint256 _tokenPerBlock) external onlyOwner {
+        rewardForBlock = _tokenPerBlock;
+    }
 
     /* ========== MODIFIER ========== */
 
@@ -211,42 +252,4 @@ contract AssetPool is ERC1155Receiver, ReentrancyGuard, Ownable{
         _;
     }
 
-    /**
-    * @dev Update reward variables of the given pool to be up-to-date.
-    */
-    function updatePool() public {
-        if (block.number <= rewardInfo.lastRewardBlock) {
-            return;
-        }
-
-        if (rewardInfo.accShare == 0) {
-            rewardInfo.lastRewardBlock = block.number;
-            return;
-        }
-
-        uint256 reward = (block.number.sub(rewardInfo.lastRewardBlock)).mul(rewardForBlock);
-
-        rewardInfo.accTokenPerShare = rewardInfo.accTokenPerShare.add(
-            reward.mul(SAFE_MULTIPLIER).div(rewardInfo.accShare)
-        );
-
-        rewardInfo.lastRewardBlock = block.number;
-    }
-    function _updateUserReward(UserInfo storage user) private{
-        if(user.totalPower > 0){
-            uint256 totalReward = user.totalPower.mul(rewardInfo.accTokenPerShare).div(SAFE_MULTIPLIER);
-            uint256 pending = totalReward.sub(user.rewardDebt);
-            user.pendingReward = user.pendingReward.add(pending);
-        }       
-    }
-    function setRewardPerBlock(uint256 _tokenPerBlock) external onlyOwner {
-        rewardForBlock = _tokenPerBlock;
-    }
-
-    function checkLengthSetKeys(address userAddress) external view returns(uint256){
-        return userInfo[userAddress].keys.length();
-    }
-    function checkSetKeys(address userAddress, uint256 i) external view returns(uint256){
-        return userInfo[userAddress].keys.at(i); 
-    }
 }

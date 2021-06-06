@@ -5,10 +5,9 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Receiver.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/IINGOTAsset.sol";
+import "./interfaces/IIngotNFT.sol";
 
-
-contract INGOTAsset is ERC1155, IINGOTAsset, Ownable {
+contract IngotNFT is ERC1155, IIngotNFT, Ownable {
     using SafeMath for uint256;
 
     mapping (address => bool) public _minters;
@@ -39,6 +38,8 @@ contract INGOTAsset is ERC1155, IINGOTAsset, Ownable {
 
     }
 
+    /* ========== MINTER ONLY FUNCTIONS ========== */
+
     function mint(address to, uint256 id, uint256 amount, bytes calldata data) override external {
         require(_minters[msg.sender], "!minter");
         Asset storage asset = assets[id];
@@ -64,22 +65,24 @@ contract INGOTAsset is ERC1155, IINGOTAsset, Ownable {
         _mintBatch( to,  ids,  amounts, data);
     }
 
+    /* ========== OWNER ONLY FUNCTIONS ========== */
+
     function addType(uint256 id, uint256 power, uint256 maxMinting) public onlyOwner {
         Asset storage asset = assets[id];
         asset.id = id;
         asset.power = power;
-        //asset.currMinting = 0;
         asset.maxMinting = maxMinting;
     }
+
     function burnAssetBatch(uint256[] memory ids, uint256[] memory amounts) public onlyOwner {
-        require(ids.length > 0, "INGOTAsset: invalid argument");
-        require(ids.length == amounts.length, "INGOTAsset: invalid argument");
+        require(ids.length > 0, "IngotNFT: invalid argument");
+        require(ids.length == amounts.length, "IngotNFT: invalid argument");
         
         for (uint256 i = 0; i < ids.length; ++i) {
             uint256 id = ids[i];
             uint256 amount = amounts[i];
             Asset storage asset = assets[id];
-            require(asset.maxMinting > 0, "INGOTAsset: invalid argument");
+            require(asset.maxMinting > 0, "IngotNFT: invalid argument");
             if(amount == 0){
                 asset.maxMinting = asset.currMinting;
             }else{
@@ -88,18 +91,19 @@ contract INGOTAsset is ERC1155, IINGOTAsset, Ownable {
         }
     }
 
-    function getAssetInfo(uint256 _id) override external view returns(uint256, uint256, uint256, uint256){
-        return(assets[_id].id, assets[_id].power, assets[_id].currMinting, assets[_id].maxMinting);
-    }
-
     function addMinter(address _minter) external onlyOwner {
         _minters[_minter] = true;
     }
-    
+
     function removeMinter(address _minter) external onlyOwner {
         _minters[_minter] = false;
     }
 
+    /* ========== PUBLIC ========== */
+
+    function getAssetInfo(uint256 _id) override external view returns(uint256, uint256, uint256, uint256){
+        return(assets[_id].id, assets[_id].power, assets[_id].currMinting, assets[_id].maxMinting);
+    }
 
     function assetPowerBatch(uint256[] memory ids) override public view returns (uint256[] memory) {
         uint256[] memory batch = new uint256[](ids.length);
@@ -108,6 +112,7 @@ contract INGOTAsset is ERC1155, IINGOTAsset, Ownable {
         }
         return batch;
     }
+
     function assetCurrMintingBatch(uint256[] memory ids) override public view returns (uint256[] memory) {
         uint256[] memory batch = new uint256[](ids.length);
         for (uint256 i = 0; i < ids.length; ++i) {
@@ -115,6 +120,7 @@ contract INGOTAsset is ERC1155, IINGOTAsset, Ownable {
         }
         return batch;
     }
+
     function assetMaxMintingBatch(uint256[] memory ids) override public view returns (uint256[] memory) {
         uint256[] memory batch = new uint256[](ids.length);
         for (uint256 i = 0; i < ids.length; ++i) {

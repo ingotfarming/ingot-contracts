@@ -4,8 +4,8 @@ truffle console
 
 var accounts = await web3.eth.getAccounts()
 
-var famtoken = await INGOTToken.deployed()
-var famasset = await INGOTAsset.deployed()
+var famtoken = await IngotToken.deployed()
+var famasset = await IngotNFT.deployed()
 var pool = await Pool.deployed()
 
 var transfer = await famasset.safeTransferFrom(accounts[0], pool.address, 0, 2, 0)
@@ -23,4 +23,15 @@ balance.toString()
 
 famtoken.mint("0x79E5Da24447A006A95b33b8AB39C6FD623ce31dE", "300")
 famasset.mint(accounts[0], 0, 10, 0);
+
+/////----------------/////
+
+truffle migrate
+truffle networks
+truffle exec scripts/start_pre_sale.js
+truffle exec scripts/close_pre_sale.js
+truffle exec scripts/extract_ether.js
+// uniswap init //
+truffle exec scripts/open_store.js
+
 
