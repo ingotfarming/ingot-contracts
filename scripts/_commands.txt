@@ -25,13 +25,15 @@ famtoken.mint("0x79E5Da24447A006A95b33b8AB39C6FD623ce31dE", "300")
 famasset.mint(accounts[0], 0, 10, 0);
 
 /////----------------/////
-
-truffle migrate
+// --network ropsten
+truffle migrate 
 truffle networks
 truffle exec scripts/start_pre_sale.js
 truffle exec scripts/close_pre_sale.js
 truffle exec scripts/extract_ether.js
 // uniswap init //
 truffle exec scripts/open_store.js
+truffle exec scripts/set_halves_to_20.js
+
 
 
