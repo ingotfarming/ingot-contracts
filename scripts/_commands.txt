@@ -1,0 +1,34 @@
+/////----------------/////
+
+// --network ropsten
+truffle migrate 
+truffle networks
+
+//--Pre Sale--//
+truffle exec scripts/start_pre_sale.js 
+truffle exec scripts/close_pre_sale.js 
+truffle exec scripts/extract_ether.js 
+truffle exec scripts/mint_token_X.js 1050000
+ 
+//->uniswap init 
+truffle exec scripts/open_store.js 
+
+//--Set 1st Halves--//
+truffle exec scripts/set_halves_to_X.js 20
+truffle exec scripts/burn_all_asset.js 
+//->launch uniswapLP
+
+//--Set 2st Halves--//
+truffle exec scripts/set_halves_to_X.js 10
+
+//--Set 3st Halves--//
+truffle exec scripts/set_halves_to_X.js 5
+
+//--Set 4st Halves--//
+truffle exec scripts/set_halves_to_X.js 2.5
+
+//--Set 5st Halves--//
+truffle exec scripts/set_halves_to_X.js 1.25
+
+//--Set 6st Halves--//
+truffle exec scripts/set_halves_to_X.js 0.625
