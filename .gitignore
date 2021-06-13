@@ -17,8 +17,7 @@ node_modules
 *.sw?
 
 /scripts/_commands.txt
-/scripts/commands.txt
-
+/test/commands.txt
 
 secrets-ropsten.json
 secrets-main.json
