@@ -16,5 +16,7 @@ node_modules
 *.sln
 *.sw?
 
+/script/_commands.txt
+
 secrets-ropsten.json
 secrets-main.json

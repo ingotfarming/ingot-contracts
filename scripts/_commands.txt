@@ -21,19 +21,28 @@ balance.toString()
 var balance = await famasset.balanceOf(accounts[0],0)
 balance.toString()
 
-famtoken.mint("0x79E5Da24447A006A95b33b8AB39C6FD623ce31dE", "300")
+famtoken.mint("0x00000", "300")
 famasset.mint(accounts[0], 0, 10, 0);
 
 /////----------------/////
+
 // --network ropsten
 truffle migrate 
 truffle networks
+
+//--Pre Sale--//
 truffle exec scripts/start_pre_sale.js
 truffle exec scripts/close_pre_sale.js
 truffle exec scripts/extract_ether.js
-// uniswap init //
+truffle exec scripts/mint_token_uniswap.js
+
+//-uniswap init
 truffle exec scripts/open_store.js
+
+//--Set 1st Halves--//
 truffle exec scripts/set_halves_to_20.js
+truffle exec scripts/burn_all_asset.js
+//-launch uniswapLP
 
 
 
