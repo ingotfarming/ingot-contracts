@@ -11,11 +11,9 @@ contract IngotToken is ERC20, IIngotToken, Ownable {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
-    // uint256 public UNISWAP_LIQUIDITY = 1050000 * 1e18;
     mapping (address => bool) public _minters;
     constructor() public ERC20("Ingot Token", "INGOT"){
         _minters[msg.sender] = true;
-        // _mint(msg.sender, UNISWAP_LIQUIDITY);
     }
     
     /* ========== MINTER ONLY FUNCTIONS ========== */

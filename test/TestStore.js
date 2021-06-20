@@ -37,6 +37,8 @@ contract("StoreTest", async accounts => {
     await store.setPriceNft(3, web3.utils.toWei("0.4"));
     await store.setPriceNft(4, web3.utils.toWei("0.3"));
 
+    await ingotToken.mint(account1, web3.utils.toWei("1000"));
+
   };
   const owner = accounts[0];
   const account1 = accounts[1];
@@ -44,18 +46,6 @@ contract("StoreTest", async accounts => {
   
   describe("Contation creation:", function() {
     before(deployContract);
-    it("Open Pre Sale", async function() {
-      await utils.expectThrow(store.buyTokens({ value: 1, from: account1}));
-      await store.setIsPresale(true, {from: owner});
-    });
-    it("Buy some Tokens", async function() {
-      let amount = web3.utils.toWei(new BN(10));
-
-      await store.buyTokens({ value: amount, from: account1 });
-      let balance = (await ingotToken.balanceOf.call(account1));
-      let factorWeiToken = await store.RATIO_WEI_TOKEN.call();
-      assert.ok(balance.eq(factorWeiToken.mul(amount)));
-    });
     it("Open Store", async function() {
       await store.setIsStoreOpen(true, {from: owner});
     });

@@ -17,13 +17,8 @@ contract Store is Ownable, ReentrancyGuard{
 
     mapping(uint256 => uint256) public priceNFT;
     bool public isStoreOpen = false;
-
-    // Pre sale variables
     uint256 public constant SAFE_MULTIPLIER = 1e18;
-    uint256 public weiRaised = 0;
-    uint256 public ETH_CAP = 1000 * SAFE_MULTIPLIER;
-    uint256 public RATIO_WEI_TOKEN = 1950;
-    bool public isPresale = false;
+
 
     constructor(IIngotToken _token, IIngotNFT _asset) public {
         token = _token;
@@ -66,38 +61,10 @@ contract Store is Ownable, ReentrancyGuard{
         token.burnTokens(amountRequired);
         asset.mintBatch(msg.sender, _ids, _amounts,"");
     }
-
-    function buyTokens() public nonReentrant payable {
-        require(isPresale, "Presale Ended");
-        uint256 weiAmount = msg.value;
-        require(weiAmount>0, "Store: invalid argument");
-        require(weiRaised.add(weiAmount) <= ETH_CAP, "ETH CAP Overlimit");
-        uint256 tokenAmount = weiAmount.mul(RATIO_WEI_TOKEN);
-    
-        weiRaised = weiRaised.add(weiAmount);
-        token.mint(msg.sender, tokenAmount);   
-    }
-
     /* ========== OWNER ONLY FUNCTIONS ========== */
-
-    function extractEther() public onlyOwner {
-       payable(owner()).transfer(address(this).balance);
-   }
 
     function setPriceNft(uint256 id, uint256 price) public onlyOwner {
         priceNFT[id] = price;
-    }
-
-    function setETHCap(uint256 cap) public onlyOwner {
-        ETH_CAP = cap;
-    }
-
-    function setRatioWeiToken(uint256 ratio) public onlyOwner {
-        RATIO_WEI_TOKEN = ratio;
-    }
-
-    function setIsPresale(bool flag) public onlyOwner {
-        isPresale = flag;
     }
 
     function setIsStoreOpen(bool flag) public onlyOwner {
