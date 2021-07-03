@@ -1,7 +1,7 @@
 /////----------------/////
 
 // --network ropsten
-truffle migrate 
+truffle migrate --to 2
 truffle networks
 
 //--Pre Sale--//

@@ -4,7 +4,6 @@ const IngotFarm = artifacts.require("IngotFarm");
 const Store = artifacts.require("Store");
 
 module.exports = async function (deployer) {
-  await deployer.deploy(IngotToken);
   const ingotToken = await IngotToken.deployed();
   console.log("IngotToken deployed to: ", ingotToken.address);
 

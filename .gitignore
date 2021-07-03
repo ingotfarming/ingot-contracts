@@ -16,5 +16,4 @@ node_modules
 *.sln
 *.sw?
 
-secrets-ropsten.json
-secrets-main.json
+secrets-*
