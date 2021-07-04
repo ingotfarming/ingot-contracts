@@ -14,13 +14,13 @@ contract PrivateSale is Ownable, ReentrancyGuard{
     IIngotToken public token;
 
     mapping (address => uint256) public users;
-
-    // Pre sale variables
     uint256 public constant SAFE_MULTIPLIER = 1e18;
     uint256 public MAX_ETH_USER = 1 * SAFE_MULTIPLIER;
+    uint256 public MIN_ETH_USER = 1 * 1e17;
+    uint256 public ETH_CAP = 20 * SAFE_MULTIPLIER;
+    uint256 public RATIO_WEI_TOKEN = 1950 * 2;
+
     uint256 public weiRaised = 0;
-    uint256 public ETH_CAP = 1000 * SAFE_MULTIPLIER;
-    uint256 public RATIO_WEI_TOKEN = 1950;
     bool public isPrivateSale = true;
 
     constructor(IIngotToken _token) public {
@@ -32,7 +32,7 @@ contract PrivateSale is Ownable, ReentrancyGuard{
     function buyTokens() public nonReentrant payable {
         require(isPrivateSale, "Private Sale Ended");
         uint256 weiAmount = msg.value;
-        require(weiAmount > 0, "Store: invalid argument");
+        require(weiAmount >= MIN_ETH_USER, "Private Sale: invalid argument");
         require(weiRaised.add(weiAmount) <= ETH_CAP, "ETH CAP Overlimit");
         require(users[msg.sender].add(weiAmount) <= MAX_ETH_USER, "ETH PER USER Overlimit");
         uint256 tokenAmount = weiAmount.mul(RATIO_WEI_TOKEN);
@@ -50,6 +50,10 @@ contract PrivateSale is Ownable, ReentrancyGuard{
 
     function setMaxETHUser(uint256 cap) public onlyOwner {
         MAX_ETH_USER = cap;
+    }
+
+    function setMinETHUser(uint256 cap) public onlyOwner {
+        MIN_ETH_USER = cap;
     }
 
     function setETHCap(uint256 cap) public onlyOwner {
