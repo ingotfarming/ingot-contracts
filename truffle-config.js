@@ -19,7 +19,7 @@
  */
 
  const HDWalletProvider = require('@truffle/hdwallet-provider');
- const { projectId, mnemonic, addressIndex } = require('./secrets-ropsten.json');
+ const { projectId, mnemonic, addressIndex } = require('./secrets-bsc-testnet.json');
 
 // const infuraKey = "fj4jll3k.....";
 //
@@ -69,12 +69,26 @@ module.exports = {
       timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: false     // Skip dry run before migrations? (default: false for public nets )
      },
-     bsc: {
-      provider: () => new HDWalletProvider(mnemonic, `https://bsc-dataseed1.binance.org`),
-      network_id: 56,
-      confirmations: 10,
+     testnet: {
+      provider: () => new HDWalletProvider(mnemonic, `https://data-seed-prebsc-1-s1.binance.org:8545`),
+      network_id: 97,
+      confirmations: 3,
       timeoutBlocks: 200,
-      skipDryRun: true
+      skipDryRun: true,     
+      gas: 4000000,
+      gasPrice: 10000000000,
+      networkCheckTimeout: 1000000
+    },
+    bsc: {
+      // https://bsc-dataseed4.binance.org
+      provider: () => new HDWalletProvider(mnemonic, `https://bsc-dataseed.binance.org/`),
+      network_id: 56,
+      confirmations: 3,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+      gas: 6000000,
+      gasPrice: 10000000000,
+      networkCheckTimeout: 1000000
     },
     // Useful for private networks
     // private: {
@@ -112,5 +126,11 @@ module.exports = {
 
   db: {
     enabled: false
+  },
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    bscscan: 'F6JCZVIP2BWH7PZJKG5D6JDWVX48MECH61'
   }
 };

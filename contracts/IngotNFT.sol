@@ -20,7 +20,7 @@ contract IngotNFT is ERC1155, IIngotNFT, Ownable {
         uint256 maxMinting;
     }
 
-    constructor() public ERC1155(""){
+    constructor() public ERC1155("https://app.ingotfarming.finance/api/ingotnft/{id}.json"){
         _minters[msg.sender] = true;
 
         addType(0, 10, 7000);
@@ -66,6 +66,10 @@ contract IngotNFT is ERC1155, IIngotNFT, Ownable {
     }
 
     /* ========== OWNER ONLY FUNCTIONS ========== */
+
+    function setURI(string memory _newuri) external onlyOwner {
+        _setURI(_newuri);
+    }
 
     function addType(uint256 id, uint256 power, uint256 maxMinting) public onlyOwner {
         Asset storage asset = assets[id];

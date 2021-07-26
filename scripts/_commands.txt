@@ -1,14 +1,17 @@
 /////----------------/////
 
-// --network ropsten
-truffle migrate --to 2
+// --network bsc testnet
+truffle migrate --to 3 --network testnet
 truffle networks
 
 //--Pre Sale--//
 truffle exec scripts/start_pre_sale.js 
-truffle exec scripts/close_pre_sale.js 
-truffle exec scripts/extract_ether.js 
-truffle exec scripts/mint_token_X.js 1050000
+truffle exec scripts/close_private_sale.js 
+truffle exec scripts/extract_ether_private_sale.js
+truffle exec scripts/mint_token_X.js 18315 --network testnet
+truffle exec scripts/approve_token.js 18315 --network testnet
+
+
  
 //->uniswap init 
 truffle exec scripts/open_store.js 

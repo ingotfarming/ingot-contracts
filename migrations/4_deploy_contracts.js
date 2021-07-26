@@ -7,7 +7,6 @@ module.exports = async function (deployer) {
   const ingotToken = await IngotToken.deployed();
   console.log("IngotToken deployed to: ", ingotToken.address);
 
-  await deployer.deploy(IngotNFT);
   const ingotAsset = await IngotNFT.deployed();
   console.log("IngotNFT deployed to: ", ingotAsset.address);
     

@@ -37,14 +37,12 @@ contract IngotFarm is ERC1155Receiver, ReentrancyGuard, Ownable{
 
     IIngotToken public token;
     IIngotNFT public asset;
-
-    uint256 public startBlock;
     
     uint256 public constant SAFE_MULTIPLIER = 1e18;
     
     // farm pool info
     RewardInfo public rewardInfo;
-    uint256 public rewardForBlock = 40 * SAFE_MULTIPLIER;
+    uint256 public rewardForBlock = 10 * SAFE_MULTIPLIER;
 
     mapping(address => UserInfo) private userInfo;
 

@@ -2,6 +2,7 @@
 node_modules
 /dist
 /build
+/build copy
 
 /test/_TestFAMAsset.js
 /test/_TestPool.js
