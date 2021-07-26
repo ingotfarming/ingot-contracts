@@ -2,7 +2,7 @@ const IngotToken = artifacts.require("IngotToken");
 const MasterChef = artifacts.require("MasterChef");
 const devAddress = '0x';
 const cakePerBlock = '10'
-const startBlock = 947279100;
+const startBlock = 0;
 
 module.exports = async function(deployer, network, accounts) {
   const ingotToken = await IngotToken.deployed();
