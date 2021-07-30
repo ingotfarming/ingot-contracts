@@ -4,6 +4,8 @@
 truffle migrate --to 3 --network testnet
 truffle networks
 
+truffle migrate --to 1 --network bsc
+
 //--Pre Sale--//
 truffle exec scripts/start_pre_sale.js 
 truffle exec scripts/close_private_sale.js 

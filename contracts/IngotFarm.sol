@@ -42,7 +42,7 @@ contract IngotFarm is ERC1155Receiver, ReentrancyGuard, Ownable{
     
     // farm pool info
     RewardInfo public rewardInfo;
-    uint256 public rewardForBlock = 10 * SAFE_MULTIPLIER;
+    uint256 public rewardForBlock = 0 * SAFE_MULTIPLIER;
 
     mapping(address => UserInfo) private userInfo;
 

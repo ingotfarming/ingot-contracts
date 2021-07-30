@@ -21,7 +21,7 @@ contract PrivateSale is Ownable, ReentrancyGuard{
     uint256 public RATIO_WEI_TOKEN = 1950 * 2;
 
     uint256 public weiRaised = 0;
-    bool public isPrivateSale = true;
+    bool public isPrivateSale = false;
 
     constructor(IIngotToken _token) public {
         token = _token;

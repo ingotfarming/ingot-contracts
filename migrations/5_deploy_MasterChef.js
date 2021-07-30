@@ -1,6 +1,5 @@
 const IngotToken = artifacts.require("IngotToken");
 const MasterChef = artifacts.require("MasterChef");
-const devAddress = '0x';
 const cakePerBlock = '10'
 const startBlock = 0;
 
