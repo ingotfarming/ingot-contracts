@@ -1,7 +1,7 @@
 const MasterChef = artifacts.require("MasterChef");
 const IngotToken = artifacts.require("IngotToken");
 
-const lpAddress = "0xbDF80f7ea30b4aebc53Eef3eB763AC46f2836f99";
+const lpAddress = "0x27c21b436a8792b56f41704a0d0bf0164e9e14a7";
 
 module.exports = async function (callback) {
   const masterChef = await MasterChef.deployed();

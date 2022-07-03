@@ -10,13 +10,16 @@ truffle migrate --to 1 --network bsc
 truffle exec scripts/start_pre_sale.js 
 truffle exec scripts/close_private_sale.js 
 truffle exec scripts/extract_ether_private_sale.js
-truffle exec scripts/mint_token_X.js 18315 --network testnet
+truffle exec scripts/mint_token_X.js 3039504 --network bsc
 truffle exec scripts/approve_token.js 18315 --network testnet
 
 
  
 //->uniswap init 
-truffle exec scripts/open_store.js 
+truffle exec scripts/open_store.js  --network testnet
+truffle exec scripts/set_halves_to_X.js 10 --network testnet
+truffle exec scripts/add_MasterChef_pool.js  --network testnet
+
 
 //--Set 1st Halves--//
 truffle exec scripts/set_halves_to_X.js 20

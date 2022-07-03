@@ -19,7 +19,7 @@
  */
 
  const HDWalletProvider = require('@truffle/hdwallet-provider');
- const { projectId, mnemonic, addressIndex } = require('./secrets-bsc.json');
+ const { projectId, mnemonic, addressIndex } = require('./secrets-.json'); //secrets-bsc-R2.json
 
 // const infuraKey = "fj4jll3k.....";
 //
@@ -87,7 +87,7 @@ module.exports = {
       timeoutBlocks: 200,
       skipDryRun: true,
       gas: 6000000,
-      gasPrice: 10000000000, // try 15
+      gasPrice: 12000000000, // try 15
       networkCheckTimeout: 1000000
     },
     // Useful for private networks
